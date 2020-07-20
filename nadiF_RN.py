@@ -1,0 +1,133 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Jul 19 14:05:21 2020
+
+@author: Rahma
+"""
+
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Apr  7 00:29:33 2020
+
+@author: Rahma
+"""
+
+
+import pandas as pd
+import string 
+#import nltk
+from stop_words import get_stop_words
+#from nltk.corpus import stopwords
+
+dataset = pd.read_excel('nadiF.xlsx',encoding='utf-8')
+dataset['text'] = dataset['text'].str.lower()
+dev = pd.read_excel('devF.xlsx',encoding='utf-8')
+dev['text'] = dev['text'].str.lower()
+#dev = pd.read_excel("dev.xlsx",encoding='utf-8')
+#dataset = dataset[dataset.country_label != 'MSA']
+#dataset=dataset.to_csv('train.csv',encoding='utf-8')
+#ponctuation 
+def remove_punctuation(text):
+    no_punct="".join([c for c in text if c not in string.punctuation])
+    return no_punct
+dataset['text']=dataset.text.apply(str)
+dev['text']=dev.text.apply(str)
+
+dataset['text']=dataset['text'].apply (lambda x : remove_punctuation (x))
+dev['text']=dev['text'].apply (lambda x : remove_punctuation (x))
+
+# stpword standard 
+"""
+def remove_stopwords(text):
+    no_stop=" ".join([c for c in text.split() if c not in stopwords.words('arabic')])
+    return no_stop
+dataset['text']=dataset.text.apply(str)
+dataset['text']=dataset['text'].apply(lambda x : remove_stopwords(x))
+"""
+caractere_speciaux=['؟','#','،','«','»','‹','›','„','‚','…','!','¡','?']
+def carac(text):
+    no_caracs="".join([c for c in text if c not in caractere_speciaux])
+    return no_caracs
+dataset['text']=dataset['text'].apply (lambda x : carac(x))
+dev['text']=dev['text'].apply (lambda x : carac(x))
+
+#dev['text']=dev['text'].apply (lambda x : carac(x))
+
+def remove_http(text):
+    no_http=" ".join([c for c in text.split() if c.startswith('http')==False])
+    return no_http
+dataset['text']=dataset['text'].apply (lambda x : remove_http(x))
+#dev['text']=dev['text'].apply (lambda x : remove_http(x))
+
+def remove_pic(text):
+    no_pic=" ".join([c for c in text.split() if c.startswith('pictwitter')==False])
+    return no_pic
+dataset['text']=dataset['text'].apply (lambda x : remove_pic(x))
+dev['text']=dev['text'].apply (lambda x : remove_pic(x))
+
+
+#dev['text']=dev['text'].apply (lambda x : remove_pic(x))
+
+def remove_tag(text):
+    no_tag=" ".join([c for c in text.split() if c.startswith('@')==False])
+    return no_tag
+dataset['text']=dataset['text'].apply (lambda x : remove_tag(x))
+dev['text']=dev['text'].apply (lambda x : remove_tag(x))
+
+chiffre=['0','1','2','3','4','5','6','7','8','9']
+def chiff(text):
+    no_chiffre="".join([c for c in text if c not in chiffre])
+    return no_chiffre
+# la nouvelle partie 
+dataset['text']=dataset['text'].apply (lambda x : chiff(x))
+dev['text']=dev['text'].apply (lambda x : chiff(x))
+
+#dataset['text'] =dataset['text'].str.replace(' ','#')
+#dev['text'] =dev['text'].str.replace(' ','#')
+dataset=dataset.dropna(axis=1, thresh=2)
+dev=dev.dropna(axis=1, thresh=2)
+
+
+from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer
+
+tv = TfidfVectorizer(token_pattern=r"(?u)\b\w+\b", ngram_range=(1,1), use_idf=False)
+
+
+
+#X = tv.fit_transform(dataset['text'])
+"""
+X_train = dataset.loc[:106000, 'text'].values
+y_train = dataset.loc[:106000, 'country_label'].values
+X_test = dataset.loc[106001:, 'text'].values
+y_test = dataset.loc[106001:, 'country_label'].values
+train = tv.fit_transform(X_train)
+test = tv.transform(X_test)
+"""
+X_train = dataset.loc[:, 'text'].values
+y_train = dataset.loc[:, 'country_label'].values
+X_test = dev.loc[:, 'text'].values
+y_test = dev.loc[:, 'country_label'].values
+train = tv.fit_transform(X_train)
+test = tv.transform(X_test)
+# fin de la nouvelle partie 
+
+#╚feature_cols = tv.get_feature_names()
+#from sklearn.model_selection import train_test_split
+
+
+
+
+print ('----------------------RN-------------------------')
+
+from sklearn.neural_network import MLPClassifier
+clf = MLPClassifier(activation='relu',hidden_layer_sizes=(20,20,20),max_iter=1000)
+model=clf.fit(train, y_train)
+from  sklearn.metrics  import accuracy_score
+predicted = clf.predict(test)
+print(accuracy_score(y_test,predicted)) 
+from sklearn.metrics import classification_report, confusion_matrix
+print(confusion_matrix(y_test,predicted))
+print(classification_report(y_test,predicted))
+
+ 
+
