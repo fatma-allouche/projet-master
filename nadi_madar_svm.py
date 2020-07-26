@@ -1,25 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Jul 19 13:52:56 2020
-
-@author: Rahma
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Jul 19 13:49:03 2020
-
-@author: Rahma
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr  7 00:29:33 2020
-
-@author: Rahma
-"""
-
-
 import pandas as pd
 import string 
 #import nltk
