@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr  7 00:29:33 2020
-
-@author: Rahma
-"""
 
 import os
 import glob
@@ -16,10 +10,10 @@ import string
 dataset = pd.read_excel('fatma.xlsx',encoding='utf-8')
 dataset.columns = ['text', 'country_label']
 
-data_enrich=pd.read_excel('essai42.xlsx',encoding='utf-8')
+data_enrich=pd.read_excel('.xlsx',encoding='utf-8')
 data_enrich['text'] = data_enrich['text'].str.lower()
  
-data_enrich2=pd.read_excel('essai32.xlsx',encoding='utf-8')
+data_enrich2=pd.read_excel('.xlsx',encoding='utf-8')
 data_enrich2['text'] = data_enrich2['text'].str.lower()
 
 data_enrich=data_enrich.append(data_enrich2,ignore_index=True)
